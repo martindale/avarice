@@ -476,6 +476,75 @@ def Ichimoku():
             print('Ichimoku: Not yet enough data to determine trend or calculate')
 
 
+# Parabolic SAR
+ParSAR_list = []
+ParSAREP_list = []
+ParSARAF = genconfig.ParSARAFInitial
+ParSARTrend_list = [0]
+def ParSAR():
+    # We don't use a traditional period, so wait for ParSARLookback
+    if len(price_list) >= genconfig.ParSARLookback:
+        # Make sorted lists from high and low in the lookback period
+        LookbackHigh_list = sorted(price_list[(genconfig.ParSARLookback * -1):])
+        LookbackLow_list = LookbackHigh_list[::-1]
+        # Determine initial trend with FutureSource's method
+        # NOTE: our initial SAR calculation differs from Wilder's
+        # last low/high allocation, and the "modern ta-lib" second to last
+        # high/low. This seems to give a conservative initial SAR
+        initial = False
+        if len(ParSAR_list) < 1:
+            initial = True
+            if price_list[-1] > price_list[-2]:
+                indicators.ParSARTrend_list.append(1)
+                ParSAR_list.append(LookbackLow_list[-2])
+                ParSAREP_list.append(LookbackHigh_list[-1])
+            elif price_list[-1] < price_list[-2]:
+                indicators.ParSARTrend_list.append(-1)
+                ParSAR_list.append(LookbackHigh_list[-2])
+                ParSAREP_list.append(LookbackLow_list[-1])
+
+        if len(ParSARTrend_list) >= 2 and not initial:
+            # Determine AF
+            if ParSARTrend_list[-1] == ParSARTrend_list[-2] and \
+                    ParSARAF < genconfig.ParSARAFMax:
+                if len(ParSAREP_list) >= 2 and not ParSAREP_list[-1] == \
+                        ParSAREP_list[-2]:
+                    indicators.ParSARAF += genconfig.ParSARAFInitial
+            else:
+                indicators.ParSARAF = genconfig.ParSARAFInitial
+
+            AFD = ParSARAF * (abs(ParSAREP_list[-1] - ParSAR_list[-1]))
+
+            # Determine SAR
+            if ParSARTrend_list[-1] == -1:
+                if (ParSAR_list[-1] + AFD) > LookbackLow_list[-1]:
+                    ParSARTrend_list.append(1)
+                    ParSAREP_list.append(LookbackLow_list[-1])
+                    ParSAR_list.append(ParSAREP_list[-2])
+                elif (ParSAR_list[-1] + AFD) < LookbackLow_list[-1]:
+                    ParSARTrend_list.append(-1)
+                    ParSAREP_list.append(LookbackHigh_list[-1])
+                    t_list = [(ParSAR_list[-1] + AFD), LookbackLow_list[-1]]
+                    ParSAR_list.append(min(t_list))
+            elif ParSARTrend_list[-1] == 1:
+                if (ParSAR_list[-1] - AFD) < LookbackHigh_list[-1]:
+                    ParSARTrend_list.append(-1)
+                    ParSAREP_list.append(LookbackHigh_list[-1])
+                    ParSAR_list.append(ParSAREP_list[-2])
+                elif (ParSAR_list[-1] - AFD) > LookbackHigh_list[-1]:
+                    ParSARTrend_list.append(1)
+                    ParSAREP_list.append(LookbackLow_list[-1])
+                    t_list = [(ParSAR_list[-1] - AFD), LookbackHigh_list[-1]]
+                    ParSAR_list.append(max(t_list))
+
+    if genconfig.Indicator == 'ParSAR':
+        if len(ParSAR_list) > 1:
+            PrintIndicatorTrend(ParSAR_list, price_list, price_list, ParSAR_list,\
+                    ParSAR_list)
+        else:
+            print('ParSAR: Not yet enough data to calculate')
+
+
 ## Volatility/Movement Strength Indicators/Indexes
 
 # Population Standard Deviation

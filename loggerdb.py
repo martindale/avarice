@@ -26,6 +26,7 @@ CandleSizeSeconds = genconfig.CandleSize * 60
 # Cleared in ExtractUsefulLists, "declared" here for external visibility
 candle_list = []
 datetime_list = []
+price_list = []
 
 def ExtractUsefulLists():
     '''Extracts useful lists from MarketHistory table.
@@ -57,6 +58,7 @@ def ExtractUsefulLists():
             loggerdb.datetime_list.append(info[column4])
             # Build ordered Price list
             indicators.price_list.append(info[column1])
+            loggerdb.price_list.append(info[column1])
         except KeyError:
             print('An update changed database structure.\n \
                     Deleting and starting over')

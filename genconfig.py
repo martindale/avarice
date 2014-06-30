@@ -79,7 +79,7 @@ Debug = False
 IndicatorList = ['RSI','FastStochRSIK','FastStochRSID','FullStochRSID',\
         'SMA','EMA','DEMA','MACD','DMACD','FastStochK','FastStochD',\
         'FullStochD','KDJ','StdDev','Aroon','Ichimoku','BollBands',\
-        'BollBandwidth']
+        'BollBandwidth','ParSAR']
 
 # The indicator that should be traded off
 Indicator = 'MACD'
@@ -185,6 +185,14 @@ SenkouSpanPeriod = 52
 KijunSenPeriod = 26
 # Only determines how far to place Senkou Spans in the future
 ChikouSpanPeriod = 26
+
+# Parabolic SAR AF initial/max
+# NOTE: AFInitial may also be considered the AF step size.
+# NOTE: SARLookback is only used for min/max since we don't have a
+# "traditional period"
+ParSARAFInitial = 0.02
+ParSARAFMax = 0.20
+ParSARLookback = 4
 
 # StdDev Sample
 StdDevSample = 10

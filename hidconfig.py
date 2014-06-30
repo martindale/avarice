@@ -1,4 +1,5 @@
 import genconfig
+import loggerdb
 import indicators
 
 # This file is not to be edited like genconfig is
@@ -92,6 +93,12 @@ elif genconfig.Indicator == 'Ichimoku':
         IndicatorList = indicators.IchimokuWeak_list
     IndicatorBid = 0
     IndicatorAsk = 0
+elif genconfig.Indicator == 'ParSAR':
+    BidAskList = True
+    TradeReverse = True
+    IndicatorList = loggerdb.price_list
+    IndicatorBid = indicators.ParSAR_list
+    IndicatorAsk = indicators.ParSAR_list
 elif genconfig.Indicator == 'RSI':
     IndicatorList = indicators.RSI_list
     IndicatorAsk = genconfig.RSIAsk
